@@ -3,9 +3,9 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,11 +18,7 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const data = await this.userService.create(createUserDto);
-    return {
-      message: 'Peticion correcta',
-      data,
-    };
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
@@ -43,7 +39,7 @@ export class UserController {
     };
   }
 
-  @Patch(':id')
+  @Put(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const data = await this.userService.update(+id, updateUserDto);
     return {

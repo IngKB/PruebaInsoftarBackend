@@ -10,17 +10,18 @@ export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<CreateUserResponse> {
     const userCedula = await this.findbyCedula(createUserDto.cedula);
     const userEmail = await this.findbyEmail(createUserDto.correo);
     if (!userCedula) {
       if (!userEmail) {
         const post = this.userRepository.create({ ...createUserDto });
-        return await this.userRepository.save(post);
+        const user = await this.userRepository.save(post);
+        return { message: 'Creado con exito', data: user };
       }
-      return 'Correo ya se encuentra registrado';
+      return { message: 'Correo ya se encuentra registrado', data: null };
     }
-    return 'Cédula ya se encuentra registrada';
+    return { message: 'Cédula ya se encuentra registrada', data: null };
   }
 
   async findAll(): Promise<User[]> {
@@ -53,4 +54,9 @@ export class UserService {
     const user = await this.findOne(id);
     return await this.userRepository.remove(user);
   }
+}
+
+export interface CreateUserResponse {
+  message: string;
+  data: User;
 }
